@@ -6,8 +6,6 @@ const employee = require('./lib/Employee');
 const role = require('./lib/Role');
 const department = require('./lib/Department');
 
-
-
 // presented with the following options
 function init() {
    inquirer.prompt({
@@ -64,6 +62,23 @@ function init() {
                 break;
        }
    });
+}
 
+// add functions
+function addEmployee() {
+    
+}
+
+function addDepartment() {
+    
+}
+
+function addRole() {
+    
+}
+
+// update employee function
+function updateEmployee() {
+    
 }
 
