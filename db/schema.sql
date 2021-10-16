@@ -2,12 +2,13 @@ DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS employee;
 
+DROP DATABASE IF EXISTS employee_tracker;
 CREATE DATABASE employee_tracker;
 USE employee_tracker;
 
 CREATE TABLE department (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE role (
@@ -24,7 +25,7 @@ CREATE TABLE employee (
     last_name VARCHAR(30) NOT NULL,
     role_id INTEGER,
     manager_id INTEGER,
-    FOREIGN KEY (role_id) REFERENCES role(title) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
     FOREIGN KEY (manager_id) REFERENCES role(id) ON DELETE CASCADE
 );
 
