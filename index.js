@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const db = require('./db');
+const DB = require('./db');
 
 const employee = require('./lib/Employee');
 const role = require('./lib/Role');
