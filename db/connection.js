@@ -11,4 +11,10 @@ const db = mysql.createConnection({
     database: 'employee_tracker'
 });
 
+db.connect((err) => {
+    if (err) {
+        console.log(err);
+    }
+});
+
 module.exports = db;
