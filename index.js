@@ -123,22 +123,84 @@ const addDepartment = () => {
 
 const addRole = () => {
     // prompted to enter the name, salary, and department for the role and that role is added to the database
-    inquirer.prompt({
-        type: 'input',
-        name: 'name',
-        
-    })
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: 'What is the name of the Role you would like to add?',
+            validate: nameInput  => {
+                if (nameInput) {
+                    return true;
+                } else {
+                    console.log('Please enter the Role name.');
+                    return false;
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'What is the salary for new role?',
+            validate: salaryInput  => {
+                if (salaryInput) {
+                    return true;
+                } else {
+                    console.log('Please enter the salary of new role.');
+                    return false;
+                }
+            }
+        },
+        {
+            // should I display a list of departments to select from
+
+        }
+    ])
+    // add a .then to push the data to the database
 }
 
 const addEmployee = () => {
     // prompted to enter the employee’s first name, last name, role, and manager and that employee is added to the database
-
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: "What is the new Employee's first name?",
+            validate: first_nameInput  => {
+                if (first_nameInput) {
+                    return true;
+                } else {
+                    console.log('Please enter Employees first name.');
+                    return false;
+                }
+            }
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: "What is the new Employee's last name?",
+            validate: last_nameInput  => {
+                if (last_nameInput) {
+                    return true;
+                } else {
+                    console.log('Please enter Employees last name.');
+                    return false;
+                }
+            }
+        },
+        {
+            // how to populate a list of roles
+        },
+        {
+            // how to populate a list of managers
+        }
+    ])
+    // add a .then to push the data to the database
 }
 
-
-
 //function to update employee
-
+const updateEmployee = () => {
+    // how to prompt a list of exsisting employees
+}
 
 //runs application
 function init() {
