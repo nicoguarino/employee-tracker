@@ -1,10 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const DB = require('path').join((__dirname, './db'));
-
-require('fs').readdirSync(DB).forEach(function (file) {
-    require('./db/' + file);
-});
+const DB = require('./db/connection');
 
 const Employee = require('./lib/Employee');
 const Role = require('./lib/Role');
