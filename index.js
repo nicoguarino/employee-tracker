@@ -204,7 +204,69 @@ function newRole() {
 
 // update employee function
 function updateEmployee() {
+    let roleHolder = [];
+    let empHolder = [];
 
+    DB.query('SELECT * FROM role',
+        function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+            for (let index = 0; index < res.length; index++) {
+                if (res[index.title]) {
+                    roleHolder.push(res[index].title);
+                }  
+            }
+
+            DB.query('SELECT * FROM employee',
+                function (err, res) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    for (let index = 0; index < res.length; index++) {
+                        if (res[index].first_name) {
+                            empHolder.push(res[index].first_name + ' ' + res[index].last_name);
+                        }
+                    }
+
+                    inquirer.prompt([
+                        {
+                            name: 'employee',
+                            type: 'list',
+                            message: 'What employee whose role would you like to update?',
+                            choices: empHolder
+                        },
+                        {
+                            name: 'role',
+                            type: 'list',
+                            message: 'What is the new role the employee will fill?',
+                            choices: roleHolder
+                        }
+                    ])
+                    .then((data) => {
+                        let roleId = null;
+                        for (let index = 0; index < res.length; index++) {
+                            if (res[index].title === data.role) {
+                                roleId = res[index].id;
+                                break;
+                            }
+                        }
+
+                        for (let index = 0; index < res.length; index++) {
+                            if (res[index].first_name + ' ' + res[index].last_name === data.employee) {
+                                let employee = new Employee(DB);
+                                employee.setProperties(res[index]);
+                                employee.role_id = roleId;
+                                employee.updateEmployee();
+                                break;
+                            }
+                        }
+                        init();
+                    });
+                }
+            );
+        }
+    );
 }
 
 init();
