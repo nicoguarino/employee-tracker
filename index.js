@@ -1,10 +1,10 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const DB = require('./db');
+const DB = require('./db/connection');
 
-const employee = require('./lib/Employee');
-const role = require('./lib/Role');
-const department = require('./lib/Department');
+const Employee = require('./lib/Employee');
+const Role = require('./lib/Role');
+const Department = require('./lib/Department');
 
 // presented with the following options
 function init() {
@@ -26,14 +26,17 @@ function init() {
         .then((selectOption) => {
             switch (selectOption) {
                 case "View All Employees":
+                    let employee = new Employee(DB);
                     employee.listAllEmployees();
                     init();
                     break;
                 case "View All Departments":
+                    let department = new Department(DB);
                     department.listAllDepartments();
                     init();
                     break;
                 case "View All Roles":
+                    let role = new Role(DB);
                     role.listAllRoles();
                     init();
                     break;
@@ -112,25 +115,26 @@ function newEmployee() {
                             choices: manager
                         }
                     ])
-                    .then((data) => {
-                        let roleId = null;
-                        for (let index = 0; index < res.length; index++) {
-                            if (res[index].title === data.role) {
-                                roleId = res[index].id;
-                                break;
+                        .then((data) => {
+                            let roleId = null;
+                            for (let index = 0; index < res.length; index++) {
+                                if (res[index].title === data.role) {
+                                    roleId = res[index].id;
+                                    break;
+                                }
                             }
-                        }
 
-                        let managerId = null;
-                        for (let index = 0; index < res.length; index++) {
-                            if (res[index].first_name + ' ' + res[index].last_name === data.manager) {
-                                managerId = res[index].id;
-                                break;
+                            let managerId = null;
+                            for (let index = 0; index < res.length; index++) {
+                                if (res[index].first_name + ' ' + res[index].last_name === data.manager) {
+                                    managerId = res[index].id;
+                                    break;
+                                }
                             }
-                        }
-                        employee.addEmployee(data.firstName, data.lastName, roleId, managerId);
-                        init();
-                    });
+                            let employee = new Employee(DB);
+                            employee.addEmployee(data.firstName, data.lastName, roleId, managerId);
+                            init();
+                        });
                 }
             );
         }
@@ -143,14 +147,59 @@ function newDepartment() {
         type: 'input',
         message: 'What new department would you like to add?'
     })
-    .then((data) => {
-        department.addDepartment(data.department);
-        init();
-    });
+        .then((data) => {
+            let department = new Department(DB);
+            department.addDepartment(data.department);
+            init();
+        });
 }
 
 function newRole() {
+    let departHolder = [];
 
+    DB.query('SELECT * FROM department',
+        function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+            for (let index = 0; index < res.length; index++) {
+                if (res[index].name) {
+                    departHolder.push(res[index].name);
+                }
+            }
+
+            inquirer.prompt([
+                {
+                    name: 'title',
+                    type: 'input',
+                    message: 'What is the tile of the new role?'
+                },
+                {
+                    name: 'salary',
+                    type: 'input',
+                    message: 'what is the salary of the new role?'
+                },
+                {
+                    name: 'department',
+                    type: 'list',
+                    message: 'What department is the new role in?',
+                    choices: departHolder
+                }
+            ])
+            .then((data) => {
+                let departmentId = null;
+                for (let index = 0; index < res.length; index++) {
+                    if (res[index].name === data.department) {
+                        departmentId = res[index].id;
+                        break;
+                    }
+                }
+                let role = new Role(DB);
+                role.addRole(data.title, data.salary, departmentId)
+                init();
+            })
+        }
+    );
 }
 
 // update employee function
