@@ -24,20 +24,18 @@ function init() {
         ]
     })
         .then((selectOption) => {
-            switch (selectOption) {
+            switch (selectOption.selectOption) {
                 case "View All Employees":
                     let employee = new Employee(DB);
                     employee.listAllEmployees();
                     init();
                     break;
                 case "View All Departments":
-                    let department = new Department(DB);
-                    department.listAllDepartments();
+                    listAllDepartments();
                     init();
                     break;
                 case "View All Roles":
-                    let role = new Role(DB);
-                    role.listAllRoles();
+                    listAllRoles();
                     init();
                     break;
                 case "Add Employee":
@@ -148,8 +146,7 @@ function newDepartment() {
         message: 'What new department would you like to add?'
     })
         .then((data) => {
-            let department = new Department(DB);
-            department.addDepartment(data.department);
+            addDepartment(data.department);
             init();
         });
 }
@@ -194,8 +191,7 @@ function newRole() {
                         break;
                     }
                 }
-                let role = new Role(DB);
-                role.addRole(data.title, data.salary, departmentId)
+                addRole(data.title, data.salary, departmentId)
                 init();
             })
         }
@@ -254,10 +250,8 @@ function updateEmployee() {
 
                         for (let index = 0; index < res.length; index++) {
                             if (res[index].first_name + ' ' + res[index].last_name === data.employee) {
-                                let employee = new Employee(DB);
-                                employee.setProperties(res[index]);
-                                employee.role_id = roleId;
-                                employee.updateEmployee();
+                                setProperties(res[index]);
+                                updateEmployee();
                                 break;
                             }
                         }
