@@ -138,7 +138,15 @@ function newEmployee() {
 }
 
 function newDepartment() {
-
+    inquirer.prompt({
+        name: 'department',
+        type: 'input',
+        message: 'What new department would you like to add?'
+    })
+    .then((data) => {
+        department.addDepartment(data.department);
+        init();
+    });
 }
 
 function newRole() {
