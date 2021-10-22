@@ -36,7 +36,8 @@ function init() {
                     init();
                     break;
                 case "View All Roles":
-                    listAllRoles();
+                    let role = new Role(DB);
+                    role.listAllRoles();
                     init();
                     break;
                 case "Add Employee":
