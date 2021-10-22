@@ -133,6 +133,7 @@ function newEmployee() {
                             }
                             let employee = new Employee(DB);
                             employee.addEmployee(data.firstName, data.lastName, roleId, managerId);
+                            console.table(employee.listAllEmployees());
                             init();
                         });
                 }
@@ -148,7 +149,9 @@ function newDepartment() {
         message: 'What new department would you like to add?'
     })
         .then((data) => {
-            addDepartment(data.department);
+            let department = new Department(DB);
+            department.addDepartment(data.department);
+            console.table(department.listAllDepartments());
             init();
         });
 }
@@ -193,7 +196,9 @@ function newRole() {
                         break;
                     }
                 }
-                addRole(data.title, data.salary, departmentId)
+                let role = Role(DB)
+                role.addRole(data.title, data.salary, departmentId)
+                console.table(role.listAllRoles());
                 init();
             })
         }
