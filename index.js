@@ -31,7 +31,8 @@ function init() {
                     init();
                     break;
                 case "View All Departments":
-                    listAllDepartments();
+                    let department = new Department(DB);
+                    department.listAllDepartments();
                     init();
                     break;
                 case "View All Roles":
