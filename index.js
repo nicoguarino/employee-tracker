@@ -220,10 +220,11 @@ function newRole() {
                         break;
                     }
                 }
-                let role = Role(DB)
+                let role = new Role(DB)
                 role.addRole(data.title, data.salary, departmentId)
                 console.log('\n');
                 console.table(role.listAllRoles());
+                console.log('\n');
                 init();
             })
         }
