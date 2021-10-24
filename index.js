@@ -68,72 +68,47 @@ function init() {
 
 // add functions
 function newEmployee() {
-
-
-    console.log('\n');
-    inquirer.prompt([
-        {
-            name: 'firstName',
-            type: 'input',
-            message: 'What is new employee first name?'
-        },
-        {
-            name: 'lastName',
-            type: 'input',
-            message: 'What is new employee last name?'
-        },
-        //assume emproles is an array of objects with first_name, last_name, and id properties
-        //map over emproles to make a new array that redefines (concatonated) first and last names as a new property called 'name' and the id as a property called 'value'
-        {
-            name: 'role',
-            type: 'list',
-            choices: emproles = DB.promise().query('SELECT * FROM role').then(data => {
-                data[0].map((role) => {
-                   const index =  {
-                        name: role.title,
-                        value: role.id 
-                    }
-                    return index
-                })
+    DB.promise().query('SELECT * FROM role').then(data => {
+        const employeeRoles = data[0].map((role) => {
+            const index =  {
+                 name: role.title,
+                 value: role.id 
+             }
+             return index
+         });
+         return employeeRoles;
+     })
+     .then( employeeRoles => {
+        console.log('\n'),
+        inquirer.prompt([
+            {
+                name: 'firstName',
+                type: 'input',
+                message: 'What is new employee first name?'
+            },
+            {
+                name: 'lastName',
+                type: 'input',
+                message: 'What is new employee last name?'
+            },
+            //assume emproles is an array of objects with first_name, last_name, and id properties
+            //map over emproles to make a new array that redefines (concatonated) first and last names as a new property called 'name' and the id as a property called 'value'
+            {
+                name: 'role',
+                type: 'list',
+                choices: employeeRoles
+            }
+        ])
+            .then((data) => {
+                let employee = new Employee(DB);
+                employee.addEmployee(data.firstName, data.lastName, data.role);
+                console.log('\n');
+                console.table(employee.listAllEmployees());
+                init();
             })
-        },
-        //same here
-        //bottom line, your choices array should contain objects that look like {name: (role.name), value: (role.id)}
-        // {
-        //     name: 'manager',
-        //     type: 'list',
-        //     choices: manager = DB.promise().query('SELECT CONCAT(manager.first_name, " ", manager.last_name) FROM employee').then(data => {
-        //         data[0].map((manager) => {
-        //             const index = {
-        //                 name: manager.name,
-        //                 value: manager.id
-        //             }
-        //         })
-        //     })
-        // }
-    ])
-        .then((data) => {
-            let roleId = null;
-            for (let index = 0; index < res.length; index++) {
-                if (res[index].title === data.role) {
-                    roleId = res[index].id;
-                    break;
-                }
-            }
+     }
 
-            let managerId = null;
-            for (let index = 0; index < res.length; index++) {
-                if (res[index].first_name + ' ' + res[index].last_name === data.manager) {
-                    managerId = res[index].id;
-                    break;
-                }
-            }
-            let employee = new Employee(DB);
-            employee.addEmployee(data.firstName, data.lastName, roleId, managerId);
-            console.log('\n');
-            console.table(employee.listAllEmployees());
-
-        }).then(init());
+    )
 
     // DB.query('SELECT * FROM role ',
     //     function (err, res) {
