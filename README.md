@@ -16,14 +16,16 @@ Employee Tracker is a node based program that uses Mysql to create a database of
 
 ## Getting Started <a name = "getting-started"></a>
 
-* [Git Hub Pull](https://github.com/nicoguarino/team-profile-generator.git)
+* [Git Hub Pull](https://github.com/nicoguarino/employee-tracker.git)
 * [Walkthrough Video](https://watch.screencastify.com/v/OXZvhzHqJi7Z5E8bAPd4)
 
 ## Installation <a name = "installation"></a>
 
 1. Download Node to be able to run application
 2. Download Inquirer by npm i inquirer
-3. To run application type in the command line node index.js
+3. Download MySQL2 by npm i MySQL2
+4. Download console.table.package by npm i console.table.package
+5. To run application type in the command line node index.js
 
 ## Code Sample <a name = "code-sample"></a>
 
