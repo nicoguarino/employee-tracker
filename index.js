@@ -28,63 +28,43 @@ function init() {
                 case "View All Employees":
                     let employee = new Employee(DB);
                     employee.listAllEmployees();
+                    console.log('\n');
                     init();
                     break;
                 case "View All Departments":
                     let department = new Department(DB);
                     department.listAllDepartments();
+                    console.log('\n');
                     init();
                     break;
                 case "View All Roles":
                     let role = new Role(DB);
                     role.listAllRoles();
+                    console.log('\n');
                     init();
                     break;
                 case "Add Employee":
                     newEmployee();
-                    init();
                     break;
                 case "Add Department":
                     newDepartment();
-                    init();
                     break;
                 case "Add Role":
                     newRole();
-                    init();
                     break;
                 case "Update Employee":
                     updateEmployee();
-                    init();
                     break;
                 case "Exit":
+                    console.log('\n');
                     console.log('Thank you for using Employee Tracker');
                     break;
                 default:
-
                     init();
                     break;
             }
         });
 }
-
-const emproles = DB.query('SELECT * FROM role').then(data => {
-    data[0].map((role) => {
-       const index =  {
-            name: role.title,
-            value: role.id 
-        }
-        return index
-    })
-});
-
-const manager = DB.query('SELECT CONCAT(manager.first_name, " ", manager.last_name) FROM employee').then(data => {
-    data[0].map((manager) => {
-        const index = {
-            name: manager.name,
-            value: manager.id
-        }
-    })
-});
 
 // add functions
 function newEmployee() {
@@ -107,15 +87,30 @@ function newEmployee() {
         {
             name: 'role',
             type: 'list',
-            choices: emproles
+            choices: emproles = DB.promise().query('SELECT * FROM role').then(data => {
+                data[0].map((role) => {
+                   const index =  {
+                        name: role.title,
+                        value: role.id 
+                    }
+                    return index
+                })
+            })
         },
         //same here
         //bottom line, your choices array should contain objects that look like {name: (role.name), value: (role.id)}
-        {
-            name: 'manager',
-            type: 'list',
-            choices: manager
-        }
+        // {
+        //     name: 'manager',
+        //     type: 'list',
+        //     choices: manager = DB.promise().query('SELECT CONCAT(manager.first_name, " ", manager.last_name) FROM employee').then(data => {
+        //         data[0].map((manager) => {
+        //             const index = {
+        //                 name: manager.name,
+        //                 value: manager.id
+        //             }
+        //         })
+        //     })
+        // }
     ])
         .then((data) => {
             let roleId = null;
@@ -137,8 +132,8 @@ function newEmployee() {
             employee.addEmployee(data.firstName, data.lastName, roleId, managerId);
             console.log('\n');
             console.table(employee.listAllEmployees());
-            init();
-        });
+
+        }).then(init());
 
     // DB.query('SELECT * FROM role ',
     //     function (err, res) {
@@ -180,8 +175,9 @@ function newDepartment() {
             department.addDepartment(data.department);
             console.log('\n');
             console.table(department.listAllDepartments());
+            console.log('\n');
             init();
-        });
+        })
 }
 
 function newRole() {
