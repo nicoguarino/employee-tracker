@@ -68,74 +68,82 @@ function init() {
 
 // add functions
 function newEmployee() {
-    DB.promise().query('SELECT * FROM role').then(data => {
-        const employeeRoles = data[0].map((role) => {
-            const index =  {
-                 name: role.title,
-                 value: role.id 
-             }
-             return index
-         });
-         return employeeRoles;
-     })
-     .then( employeeRoles => {
-        console.log('\n'),
-        inquirer.prompt([
-            {
-                name: 'firstName',
-                type: 'input',
-                message: 'What is new employee first name?'
-            },
-            {
-                name: 'lastName',
-                type: 'input',
-                message: 'What is new employee last name?'
-            },
-            //assume emproles is an array of objects with first_name, last_name, and id properties
-            //map over emproles to make a new array that redefines (concatonated) first and last names as a new property called 'name' and the id as a property called 'value'
-            {
-                name: 'role',
-                type: 'list',
-                choices: employeeRoles
+    let emproles = []
+    let manager = []
+
+    DB.query('SELECT * FROM role ',
+        function (err, res) {
+            if (err) {
+                console.log(err);
             }
-        ])
-            .then((data) => {
-                let employee = new Employee(DB);
-                employee.addEmployee(data.firstName, data.lastName, data.role);
-                console.log('\n');
-                console.table(employee.listAllEmployees());
-                init();
-            })
-     }
+            for (let index = 0; index < res.length; index++) {
+                if (res[index].title) {
+                    emproles.push(res[index].title);
+                }
 
-    )
+            }
+            DB.query('SELECT * FROM employee ',
+                function (err, res) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    for (let index = 0; index < res.length; index++) {
+                        if (res[index].first_name) {
+                            manager.push(res[index].first_name + ' ' + res[index].last_name);
+                        }
+                    }
 
-    // DB.query('SELECT * FROM role ',
-    //     function (err, res) {
-    //         if (err) {
-    //             console.log(err);
-    //         }
-    //         for (let index = 0; index < res.length; index++) {
-    //             if (res[index].title) {
-    //                 emproles.push(res[index].title);
-    //             }
+                    inquirer.prompt([
+                        {
+                            name: 'firstName',
+                            type: 'input',
+                            message: 'What is new employee first name?'
+                        },
+                        {
+                            name: 'lastName',
+                            type: 'input',
+                            message: 'What is new employee last name?'
+                        },
+                        //assume emproles is an array of objects with first_name, last_name, and id properties
+                        //map over emproles to make a new array that redefines (concatonated) first and last names as a new property called 'name' and the id as a property called 'value'
+                        {
+                            name: 'role',
+                            type: 'list',
+                            choices: emproles
+                        },
+                        //same here
+                        //bottom line, your choices array should contain objects that look like {name: (role.name), value: (role.id)}
+                        {
+                            name: 'manager',
+                            type: 'list',
+                            choices: manager
+                        }
+                    ])
+                        .then((data) => {
+                            let roleId = null;
+                            for (let index = 0; index < res.length; index++) {
+                                if (res[index].title === data.role) {
+                                    roleId = res[index].id;
+                                    break;
+                                }
+                            }
 
-    //         }
-    //         DB.query('SELECT * FROM employee ',
-    //             function (err, res) {
-    //                 if (err) {
-    //                     console.log(err);
-    //                 }
-    //                 for (let index = 0; index < res.length; index++) {
-    //                     if (res[index].first_name) {
-    //                         manager.push(res[index].first_name + ' ' + res[index].last_name);
-    //                     }
-    //                 }
-
-    //             }
-    //         );
-    //     }
-    // );
+                            let managerId = null;
+                            for (let index = 0; index < res.length; index++) {
+                                if (res[index].first_name + ' ' + res[index].last_name === data.manager) {
+                                    managerId = res[index].id;
+                                    break;
+                                }
+                            }
+                            let employee = new Employee(DB);
+                            employee.addEmployee(data.firstName, data.lastName, roleId, managerId);
+                            console.table(employee.listAllEmployees());
+                            init();
+                        });                   
+                }
+            );
+        }
+    );
 }
 
 function newDepartment() {
@@ -187,21 +195,21 @@ function newRole() {
                     choices: departHolder
                 }
             ])
-            .then((data) => {
-                let departmentId = null;
-                for (let index = 0; index < res.length; index++) {
-                    if (res[index].name === data.department) {
-                        departmentId = res[index].id;
-                        break;
+                .then((data) => {
+                    let departmentId = null;
+                    for (let index = 0; index < res.length; index++) {
+                        if (res[index].name === data.department) {
+                            departmentId = res[index].id;
+                            break;
+                        }
                     }
-                }
-                let role = new Role(DB)
-                role.addRole(data.title, data.salary, departmentId)
-                console.log('\n');
-                console.table(role.listAllRoles());
-                console.log('\n');
-                init();
-            })
+                    let role = new Role(DB)
+                    role.addRole(data.title, data.salary, departmentId)
+                    console.log('\n');
+                    console.table(role.listAllRoles());
+                    console.log('\n');
+                    init();
+                })
         }
     );
 }
@@ -219,7 +227,7 @@ function updateEmployee() {
             for (let index = 0; index < res.length; index++) {
                 if (res[index.title]) {
                     roleHolder.push(res[index].title);
-                }  
+                }
             }
 
             DB.query('SELECT * FROM employee',
@@ -247,25 +255,25 @@ function updateEmployee() {
                             choices: roleHolder
                         }
                     ])
-                    .then((data) => {
-                        let roleId = null;
-                        for (let index = 0; index < res.length; index++) {
-                            if (res[index].title === data.role) {
-                                roleId = res[index].id;
-                                break;
+                        .then((data) => {
+                            let roleId = null;
+                            for (let index = 0; index < res.length; index++) {
+                                if (res[index].title === data.role) {
+                                    roleId = res[index].id;
+                                    break;
+                                }
                             }
-                        }
 
-                        for (let index = 0; index < res.length; index++) {
-                            if (res[index].first_name + ' ' + res[index].last_name === data.employee) {
-                                setProperties(res[index]);
-                                updateEmployee();
-                                break;
+                            for (let index = 0; index < res.length; index++) {
+                                if (res[index].first_name + ' ' + res[index].last_name === data.employee) {
+                                    setProperties(res[index]);
+                                    updateEmployee();
+                                    break;
+                                }
                             }
-                        }
 
-                        init();
-                    });
+                            init();
+                        });
                 }
             );
         }
