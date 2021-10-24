@@ -266,8 +266,11 @@ function updateEmployee() {
 
                             for (let index = 0; index < res.length; index++) {
                                 if (res[index].first_name + ' ' + res[index].last_name === data.employee) {
-                                    setProperties(res[index]);
-                                    updateEmployee();
+                                    let employee = new Employee(DB);
+
+                                    employee.setProperties(res[index]);
+                                    employee.role_id = roleId;
+                                    employee.updateEmployee();
                                     break;
                                 }
                             }
